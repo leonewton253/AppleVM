@@ -31,6 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
 
     private func createVMBundle() {
         do {
+            try FileManager.default.removeItem(atPath: vmBundlePath)
             try FileManager.default.createDirectory(atPath: vmBundlePath, withIntermediateDirectories: false)
         } catch {
             fatalError("Failed to create “GUI Linux VM.bundle.”")
@@ -50,7 +51,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
 
         do {
             // 64 GB disk space.
-            try mainDiskFileHandle.truncate(atOffset: 64 * 1024 * 1024 * 1024)
+            try mainDiskFileHandle.truncate(atOffset: 1 * 1024)
         } catch {
             fatalError("Failed to truncate the main disk image.")
         }
@@ -250,7 +251,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
         // one and install Linux onto an empty disk image from the ISO image,
         // otherwise, it tries to directly boot from the disk image inside
         // the "GUI Linux VM.bundle".
-        if !FileManager.default.fileExists(atPath: vmBundlePath) {
+        
             needsInstall = true
             createVMBundle()
             createMainDiskImage()
@@ -269,10 +270,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
                     fatalError("ISO file not selected.")
                 }
             }
-        } else {
-            needsInstall = false
-            configureAndStartVirtualMachine()
-        }
+        
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
